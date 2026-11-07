@@ -27,3 +27,15 @@ Initial modular DKMS and Debian packaging framework for Realtek RTL8189FS (SDIO)
 - **CI/CD & Documentation**:
   - GitHub Actions release pipeline (`.github/workflows/release.yml`) and changelog extraction helper (`.github/scripts/extract-changelog.py`).
   - Dual-language documentation (`README.md` and `README.id.md`).
+
+### Changed
+- **Compiler & Throughput Optimizations**:
+  - Elevated compiler optimization from `-O1` to `-O2` in `Makefile`.
+  - Enabled Linux network stack NAPI (`CONFIG_RTW_NAPI = y`) and Generic Receive Offload (`CONFIG_RTW_GRO = y`) for softirq RX packet processing and reduced CPU overhead.
+  - Reduced default driver debug verbosity to level 2 (`CONFIG_RTW_LOG_LEVEL = 2` and `rtw_drv_log_level=2`) to prevent dmesg log flood.
+
+### Fixed
+- **Multi-Kernel Compatibility Guards (`ioctl_cfg80211.c`)**:
+  - Implemented `#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))` guards for station ops (`add_station`, `del_station`, `change_station`, `dump_station`), key ops (`add_key`, `del_key`, `get_key`, `set_default_mgmt_key`), and power ops (`set_txpower`, `get_txpower`, `set_wiphy_params`), ensuring full out-of-the-box compatibility on Linux LTS kernels (5.x - 6.12) as well as newer kernels (6.14+).
+  - Corrected `set_monitor_channel` net_device boundary to Linux 6.7+.
+  - Corrected `from_timer` macro in `include/osdep_service_linux.h` for Linux 4.14+ timer API.
