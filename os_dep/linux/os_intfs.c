@@ -245,7 +245,7 @@ int rtw_rx_ampdu_amsdu = 2;/* 0: disabled, 1:enabled, 2:auto . There is an IOT i
 #elif ((defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)) && defined(CONFIG_SDIO_HCI))
 int rtw_rx_ampdu_amsdu = 1;
 #else
-int rtw_rx_ampdu_amsdu;/* 0: disabled, 1:enabled, 2:auto . There is an IOT issu with DLINK DIR-629 when the flag turn on */
+int rtw_rx_ampdu_amsdu = 1;/* 0: disabled, 1:enabled, 2:auto */
 #endif
 /*
 * 2: Follow the AMSDU filed in ADDBA Resp. (Deault)
@@ -253,6 +253,9 @@ int rtw_rx_ampdu_amsdu;/* 0: disabled, 1:enabled, 2:auto . There is an IOT issu 
 * 1: Force the AMSDU filed in ADDBA Resp. to be enabled.
 */
 int rtw_tx_ampdu_amsdu = 2;
+int rtw_rx_ampdu_factor = 3; /* 0: 8k, 1: 16k, 2: 32k, 3: 64k, 0xff: default */
+module_param(rtw_rx_ampdu_factor, int, 0644);
+MODULE_PARM_DESC(rtw_rx_ampdu_factor, "RX AMPDU factor: 0: 8k, 1: 16k, 2: 32k, 3: 64k, 0xff: default");
 
 static uint rtw_rx_ampdu_sz_limit_1ss[4] = CONFIG_RTW_RX_AMPDU_SZ_LIMIT_1SS;
 static uint rtw_rx_ampdu_sz_limit_1ss_num = 0;
@@ -280,6 +283,8 @@ MODULE_PARM_DESC(rtw_rx_ampdu_sz_limit_4ss, "RX AMPDU size limit for 4SS link of
 * BIT2 - 80MHz, 0: non-support, 1: support
 * BIT3 - 160MHz, 0: non-support, 1: support */
 int rtw_short_gi = 0xf;
+module_param(rtw_short_gi, int, 0644);
+MODULE_PARM_DESC(rtw_short_gi, "Short GI support: bit0: 20M, bit1: 40M, bit2: 80M, bit3: 160M");
 /* BIT0: Enable VHT LDPC Rx, BIT1: Enable VHT LDPC Tx, BIT4: Enable HT LDPC Rx, BIT5: Enable HT LDPC Tx */
 int rtw_ldpc_cap = 0x33;
 /* BIT0: Enable VHT STBC Rx, BIT1: Enable VHT STBC Tx, BIT4: Enable HT STBC Rx, BIT5: Enable HT STBC Tx */
@@ -2207,7 +2212,7 @@ u8 rtw_init_default_value(_adapter *padapter)
 	padapter->driver_tx_bw_mode = pregistrypriv->tx_bw_mode;
 
 	padapter->driver_ampdu_spacing = 0xFF;
-	padapter->driver_rx_ampdu_factor =  0xFF;
+	padapter->driver_rx_ampdu_factor = (u8)rtw_rx_ampdu_factor;
 	padapter->driver_rx_ampdu_spacing = 0xFF;
 	padapter->fix_rx_ampdu_accept = RX_AMPDU_ACCEPT_INVALID;
 	padapter->fix_rx_ampdu_size = RX_AMPDU_SIZE_INVALID;

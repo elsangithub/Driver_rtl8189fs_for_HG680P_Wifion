@@ -8,3 +8,9 @@ if [ -d /sys/class/net/wlan0/queues/rx-0 ]; then
     echo e > /sys/class/net/wlan0/queues/rx-0/rps_cpus 2>/dev/null || true
     echo 4096 > /sys/class/net/wlan0/queues/rx-0/rps_flow_cnt 2>/dev/null || true
 fi
+
+# Anti-bufferbloat & active queue discipline tuning for wlan0
+if [ -d /sys/class/net/wlan0 ]; then
+    ip link set dev wlan0 txqueuelen 1000 2>/dev/null || true
+    tc qdisc replace dev wlan0 root fq_codel 2>/dev/null || true
+fi

@@ -9148,6 +9148,19 @@ void _issue_assocreq(_adapter *padapter, u8 is_reassoc)
 
 					pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info = cpu_to_le16(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info);
 
+					/* Ensure STA advertises Short GI capability to the AP */
+					if (padapter->mlmepriv.htpriv.sgi_20m || TEST_FLAG(padapter->registrypriv.short_gi, BIT0))
+						pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info |= cpu_to_le16(IEEE80211_HT_CAP_SGI_20);
+
+					if (padapter->mlmepriv.htpriv.sgi_40m || TEST_FLAG(padapter->registrypriv.short_gi, BIT1))
+						pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info |= cpu_to_le16(IEEE80211_HT_CAP_SGI_40);
+
+					/* Ensure STA advertises configured RX AMPDU factor to the AP */
+					if (padapter->driver_rx_ampdu_factor != 0xFF) {
+						pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para &= ~0x03;
+						pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para |= (padapter->driver_rx_ampdu_factor & 0x03);
+					}
+
 					pframe = rtw_set_ie(pframe, EID_HTCapability, pIE->Length , (u8 *)(&(pmlmeinfo->HT_caps)), &(pattrib->pktlen));
 				}
 			}
@@ -12082,10 +12095,12 @@ void update_sta_info(_adapter *padapter, struct sta_info *psta)
 
 		psta->htpriv.rx_ampdu_min_spacing = (pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & IEEE80211_HT_CAP_AMPDU_DENSITY) >> 2;
 
-		if (support_short_GI(padapter, &(pmlmeinfo->HT_caps), CHANNEL_WIDTH_20))
+		if (support_short_GI(padapter, &(pmlmeinfo->HT_caps), CHANNEL_WIDTH_20)
+		    || TEST_FLAG(padapter->registrypriv.short_gi, BIT0))
 			psta->htpriv.sgi_20m = _TRUE;
 
-		if (support_short_GI(padapter, &(pmlmeinfo->HT_caps), CHANNEL_WIDTH_40))
+		if (support_short_GI(padapter, &(pmlmeinfo->HT_caps), CHANNEL_WIDTH_40)
+		    || TEST_FLAG(padapter->registrypriv.short_gi, BIT1))
 			psta->htpriv.sgi_40m = _TRUE;
 
 		psta->qos_option = _TRUE;
