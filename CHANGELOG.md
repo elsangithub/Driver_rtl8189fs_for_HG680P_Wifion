@@ -37,7 +37,7 @@ Initial modular DKMS and Debian packaging framework for Realtek RTL8189FS (SDIO)
   - Added `-fmin-function-alignment=%` compiler flag filtering for cross-toolchain header resilience.
   - Added Bare-metal libc include injection (`-isystem $(shell $(CC) -print-file-name=include)`) for Linux 6.12+ compatibility.
   - Added GCC 14 pointer error suppression flags (`-Wno-incompatible-pointer-types`, `-Wno-error=incompatible-pointer-types`, `-Wno-error=discarded-qualifiers`).
-  - Streamlined driver build by disabling Mass Production factory calibration test code (`CONFIG_MP_INCLUDED = n`) and verbose debug printk tracing (`CONFIG_RTW_DEBUG = n`), significantly reducing compile time and binary memory footprint on embedded ARM boards.
+  - Streamlined driver build by disabling Mass Production factory calibration test code (`CONFIG_MP_INCLUDED = n`), verbose debug printk tracing (`CONFIG_RTW_DEBUG = n`), and concurrent dual-interface emulation (`CONFIG_CONCURRENT_MODE`), eliminating phantom `wlan1` adapter, reducing compile time significantly, and minimizing binary memory footprint on embedded ARM boards.
   - Enabled Linux network stack NAPI (`CONFIG_RTW_NAPI = y`) and Generic Receive Offload (`CONFIG_RTW_GRO = y`) for softirq RX packet processing and reduced CPU overhead.
   - Configured top-level module define `CONFIG_RTL8189FS ?= m` for robust out-of-tree kbuild integration.
 - **DKMS Invocation & Packaging Architecture**:
