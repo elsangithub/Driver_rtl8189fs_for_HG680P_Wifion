@@ -1019,6 +1019,7 @@ void rtw_cfg80211_indicate_connect(_adapter *padapter)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
 	struct cfg80211_roam_info roam_info ={};
 #endif
+	struct cfg80211_bss *connected_bss = NULL;
 
 	RTW_INFO(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
 	if (pwdev->iftype != NL80211_IFTYPE_STATION
@@ -1047,34 +1048,26 @@ void rtw_cfg80211_indicate_connect(_adapter *padapter)
 	if (check_fwstate(pmlmepriv, WIFI_MONITOR_STATE) != _TRUE) {
 		WLAN_BSSID_EX  *pnetwork = &(padapter->mlmeextpriv.mlmext_info.network);
 		struct wlan_network *scanned = pmlmepriv->cur_network_scanned;
+		struct wlan_network *target = NULL;
 
-		/* RTW_INFO(FUNC_ADPT_FMT" BSS not found\n", FUNC_ADPT_ARG(padapter)); */
-
-		if (scanned == NULL) {
-			rtw_warn_on(1);
-			goto check_bss;
-		}
-
-		if (_rtw_memcmp(scanned->network.MacAddress, pnetwork->MacAddress, sizeof(NDIS_802_11_MAC_ADDRESS)) == _TRUE
+		if (scanned && _rtw_memcmp(scanned->network.MacAddress, pnetwork->MacAddress, sizeof(NDIS_802_11_MAC_ADDRESS)) == _TRUE
 			&& _rtw_memcmp(&(scanned->network.Ssid), &(pnetwork->Ssid), sizeof(NDIS_802_11_SSID)) == _TRUE
 		) {
-			if (!rtw_cfg80211_inform_bss(padapter, scanned))
-				RTW_INFO(FUNC_ADPT_FMT" inform fail !!\n", FUNC_ADPT_ARG(padapter));
-			else {
-				/* RTW_INFO(FUNC_ADPT_FMT" inform success !!\n", FUNC_ADPT_ARG(padapter)); */
-			}
-		} else {
-			RTW_INFO("scanned: %s("MAC_FMT"), cur: %s("MAC_FMT")\n",
-				scanned->network.Ssid.Ssid, MAC_ARG(scanned->network.MacAddress),
-				pnetwork->Ssid.Ssid, MAC_ARG(pnetwork->MacAddress)
-			);
-			rtw_warn_on(1);
+			target = scanned;
+		} else if (cur_network) {
+			target = cur_network;
+		}
+
+		if (target) {
+			connected_bss = rtw_cfg80211_inform_bss(padapter, target);
 		}
 	}
 
 check_bss:
-	if (!rtw_cfg80211_check_bss(padapter))
-		RTW_PRINT(FUNC_ADPT_FMT" BSS not found !!\n", FUNC_ADPT_ARG(padapter));
+	if (!rtw_cfg80211_check_bss(padapter)) {
+		if (cur_network)
+			connected_bss = rtw_cfg80211_inform_bss(padapter, cur_network);
+	}
 
 	_enter_critical_bh(&pwdev_priv->connect_req_lock, &irqL);
 
@@ -1125,13 +1118,24 @@ check_bss:
 		RTW_INFO("pwdev->sme_state(b)=%d\n", pwdev->sme_state);
 		#endif
 
-		if (check_fwstate(pmlmepriv, WIFI_MONITOR_STATE) != _TRUE)
-			rtw_cfg80211_connect_result(pwdev, cur_network->network.MacAddress
-				, pmlmepriv->assoc_req + sizeof(struct rtw_ieee80211_hdr_3addr) + 2
-				, pmlmepriv->assoc_req_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 2
-				, pmlmepriv->assoc_rsp + sizeof(struct rtw_ieee80211_hdr_3addr) + 6
-				, pmlmepriv->assoc_rsp_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 6
-				, WLAN_STATUS_SUCCESS, GFP_ATOMIC);
+		if (check_fwstate(pmlmepriv, WIFI_MONITOR_STATE) != _TRUE) {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0))
+			if (connected_bss) {
+				rtw_cfg80211_connect_bss(pwdev, cur_network->network.MacAddress, connected_bss
+					, pmlmepriv->assoc_req + sizeof(struct rtw_ieee80211_hdr_3addr) + 2
+					, pmlmepriv->assoc_req_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 2
+					, pmlmepriv->assoc_rsp + sizeof(struct rtw_ieee80211_hdr_3addr) + 6
+					, pmlmepriv->assoc_rsp_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 6
+					, WLAN_STATUS_SUCCESS, GFP_ATOMIC);
+			} else
+#endif
+				rtw_cfg80211_connect_result(pwdev, cur_network->network.MacAddress
+					, pmlmepriv->assoc_req + sizeof(struct rtw_ieee80211_hdr_3addr) + 2
+					, pmlmepriv->assoc_req_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 2
+					, pmlmepriv->assoc_rsp + sizeof(struct rtw_ieee80211_hdr_3addr) + 6
+					, pmlmepriv->assoc_rsp_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 6
+					, WLAN_STATUS_SUCCESS, GFP_ATOMIC);
+		}
 		#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0) || defined(COMPAT_KERNEL_RELEASE)
 		RTW_INFO("pwdev->sme_state(a)=%d\n", pwdev->sme_state);
 		#endif

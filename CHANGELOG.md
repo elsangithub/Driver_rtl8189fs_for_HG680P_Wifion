@@ -27,6 +27,16 @@ Cleaned up legacy vendor build definitions to prune over 38 deadweight C transla
   - Pruned 17 unused MIMO/11ac PHYDM translation units from `_PHYDM_FILES` (Antenna Diversity, SOML MIMO stubs, Smart Antenna, Antenna Detection, Path Diversity, Beamforming TXBF, LNA saturation checks, ADC sampling, Power Training, PMAC TX settings, and MP tools) that are irrelevant for RTL8189FS (1T1R SISO 2.4GHz).
   - Retained essential stub symbols required by PHYDM core (`phydm_soml.o`, `phydm_dfs.o`, and `phydm_hal_txbf_api.o`), guaranteeing 0 modpost errors and 100% symbol integrity.
 
+### Fixed
+- **Linux 5.12+ RX Packet Delivery**:
+  - Fixed silent packet drop / blackhole in `os_dep/linux/recv_linux.c` under `napi_recv()` for Linux kernel >= 5.12, ensuring incoming EAPOL and data frames are delivered reliably to the network stack.
+  - Disabled redundant GRO (`CONFIG_RTW_GRO = n`) for SDIO 1T1R Wi-Fi, streamlining NAPI directly through `netif_receive_skb`.
+- **Kernel cfg80211 Warning Elimination (`net/wireless/sme.c:845`)**:
+  - Implemented `cfg80211_connect_bss` on Linux 6.0+ to pass authenticated BSS references directly to `cfg80211`, eliminating `WARN_ON(!bss)` kernel traces.
+  - Guaranteed fallback to `cur_network` for `rtw_cfg80211_inform_bss` when `cur_network_scanned` is unpopulated.
+- **Module Configuration Cleanup**:
+  - Removed deprecated `rtw_drv_log_level=2` option from `/etc/modprobe.d/rtl8189fs.conf` to prevent kernel parameter warnings.
+
 ## [1.0.0] - 2026-11-08
 
 ### 🚀 Initial Production DKMS Release
