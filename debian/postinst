@@ -43,7 +43,7 @@ dkms build -m rtl8189fs -v $VERSION
 dkms install -m rtl8189fs -v $VERSION
 
 echo "Configuring automatic kernel module loading..."
-echo 8189fs > /etc/modules-load.d/8189fs.conf
+echo 8189fs > /etc/modules-load.d/rtl8189fs.conf
 depmod -a
 
 # Load driver module

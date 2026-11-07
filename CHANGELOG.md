@@ -20,8 +20,11 @@ Initial modular DKMS and Debian packaging framework for Realtek RTL8189FS (SDIO)
 - **Strict System Namespacing & Performance Tuning**:
   - `99-rtl8189fs-throughput.conf`: Network socket buffer and TCP window scaling sysctl optimizations.
   - `99-rtl8189fs-performance.rules`: Udev rule triggering Wi-Fi optimization on interface activation.
-  - `rtl8189fs-irq-tune.sh`: SDIO interrupt balancing and Receive Packet Steering (RPS) configuration.
+  - `rtl8189fs-irq-tune.sh`: SDIO interrupt balancing and Receive Packet Steering (RPS) configuration targeting controller physical register `d0070000`.
   - `rtl8189fs.conf`: Modprobe configuration disabling aggressive power saving (`rtw_power_mgnt=0`, `rtw_ips_mode=0`) for rock-solid stability.
+- **Hardware Device Tree Integration**:
+  - Dedicated Device Tree source and binary for FiberHome HG680-P (`dtb/meson-gxl-s905x-hg680p.dts`, `dtb/meson-gxl-s905x-hg680p.dtb`) fixing Wi-Fi SDIO power/reset line (GPIOX_6 / Pin 85) and eliminating phantom Broadcom Bluetooth timeouts.
+  - Reference DTS and DTB files for Amlogic P212 and ZTE B860H.
 - **Debian Packaging Scripts**:
   - Turnkey `debian/control`, `debian/preinst`, `debian/postinst`, and `debian/prerm` scripts with kernel header detection and glibc host tool self-healing.
 - **CI/CD & Documentation**:
@@ -29,10 +32,15 @@ Initial modular DKMS and Debian packaging framework for Realtek RTL8189FS (SDIO)
   - Dual-language documentation (`README.md` and `README.id.md`).
 
 ### Changed
-- **Compiler & Throughput Optimizations**:
+- **Compiler & Build System Hardening**:
   - Elevated compiler optimization from `-O1` to `-O2` in `Makefile`.
+  - Added `-fmin-function-alignment=%` compiler flag filtering for cross-toolchain header resilience.
+  - Added Bare-metal libc include injection (`-isystem $(shell $(CC) -print-file-name=include)`) for Linux 6.12+ compatibility.
+  - Added GCC 14 pointer error suppression flags (`-Wno-incompatible-pointer-types`, `-Wno-error=incompatible-pointer-types`, `-Wno-error=discarded-qualifiers`).
   - Enabled Linux network stack NAPI (`CONFIG_RTW_NAPI = y`) and Generic Receive Offload (`CONFIG_RTW_GRO = y`) for softirq RX packet processing and reduced CPU overhead.
   - Reduced default driver debug verbosity to level 2 (`CONFIG_RTW_LOG_LEVEL = 2` and `rtw_drv_log_level=2`) to prevent dmesg log flood.
+- **Packaging Scripts Namespacing**:
+  - Switched autoload configuration in `debian/postinst` and `debian/prerm` to strict namespaced `/etc/modules-load.d/rtl8189fs.conf`.
 
 ### Fixed
 - **Multi-Kernel Compatibility Guards (`ioctl_cfg80211.c`)**:

@@ -1,3 +1,7 @@
+# Filter out compiler options that may be present in kernel headers built by newer GCC
+# versions but not supported by the host compiler.
+KBUILD_CFLAGS := $(filter-out -fmin-function-alignment=%, $(KBUILD_CFLAGS))
+
 ccflags-y += -O2
 #ccflags-y += -O3
 #ccflags-y += -Wall
@@ -5,6 +9,11 @@ ccflags-y += -O2
 #ccflags-y += -Werror
 #ccflags-y += -pedantic
 #ccflags-y += -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes
+
+# The vendor code includes a few bare libc headers (e.g. <stddef.h>).
+# Since v6.12-ish the kernel no longer adds the compiler's own include
+# directory to the search path, so add it back here for this driver.
+ccflags-y += -isystem $(shell $(CC) -print-file-name=include)
 
 ccflags-y += -Wno-unused-variable
 #ccflags-y += -Wno-unused-value
@@ -14,6 +23,9 @@ ccflags-y += -Wno-unused-function
 ccflags-y += -Wno-unused
 ccflags-y += -Wno-missing-prototypes
 ccflags-y += -Wno-missing-declarations
+ccflags-y += -Wno-incompatible-pointer-types
+ccflags-y += -Wno-error=incompatible-pointer-types
+ccflags-y += -Wno-error=discarded-qualifiers
 #ccflags-y += -Wno-uninitialized
 
 GCC_VER_49 := $(shell echo `$(CC) -dumpversion | cut -f1-2 -d.` \>= 4.9 | bc )

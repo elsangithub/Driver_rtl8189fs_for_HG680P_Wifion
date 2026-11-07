@@ -12,6 +12,3 @@ Module.symvers
 # Local logs and experimental notes
 EXPERIMENTAL*.md
 *.log
-
-# Local DTB inspection folder
-dtb/
