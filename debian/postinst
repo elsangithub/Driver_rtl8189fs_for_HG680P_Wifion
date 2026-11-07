@@ -46,6 +46,9 @@ echo "Configuring automatic kernel module loading..."
 echo 8189fs > /etc/modules-load.d/rtl8189fs.conf
 depmod -a
 
+# Ensure cfg80211 subsystem dependency is loaded
+modprobe cfg80211 2>/dev/null || true
+
 # Load driver module
 modprobe 8189fs 2>/dev/null || true
 

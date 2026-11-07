@@ -37,13 +37,16 @@ Initial modular DKMS and Debian packaging framework for Realtek RTL8189FS (SDIO)
   - Added `-fmin-function-alignment=%` compiler flag filtering for cross-toolchain header resilience.
   - Added Bare-metal libc include injection (`-isystem $(shell $(CC) -print-file-name=include)`) for Linux 6.12+ compatibility.
   - Added GCC 14 pointer error suppression flags (`-Wno-incompatible-pointer-types`, `-Wno-error=incompatible-pointer-types`, `-Wno-error=discarded-qualifiers`).
+  - Streamlined driver build by disabling Mass Production factory calibration test code (`CONFIG_MP_INCLUDED = n`) and verbose debug printk tracing (`CONFIG_RTW_DEBUG = n`), significantly reducing compile time and binary memory footprint on embedded ARM boards.
   - Enabled Linux network stack NAPI (`CONFIG_RTW_NAPI = y`) and Generic Receive Offload (`CONFIG_RTW_GRO = y`) for softirq RX packet processing and reduced CPU overhead.
-  - Reduced default driver debug verbosity to level 2 (`CONFIG_RTW_LOG_LEVEL = 2` and `rtw_drv_log_level=2`) to prevent dmesg log flood.
-- **Packaging Scripts Namespacing**:
+  - Configured top-level module define `CONFIG_RTL8189FS ?= m` for robust out-of-tree kbuild integration.
+- **DKMS Invocation & Packaging Architecture**:
+  - Aligned DKMS build invocation syntax in `dkms.conf` with modern DKMS 3.x standards using `-C $kernel_source_dir M=$dkms_tree/...` (matching MediaTek `mt7663`/`mt7668` paradigm).
   - Switched autoload configuration in `debian/postinst` and `debian/prerm` to strict namespaced `/etc/modules-load.d/rtl8189fs.conf`.
+  - Added proactive `cfg80211` module loading in `debian/postinst`.
 
 ### Fixed
-- **Multi-Kernel Compatibility Guards (`ioctl_cfg80211.c`)**:
+- **Multi-Kernel Compatibility Guards (`ioctl_cfg80211.c` & `osdep_service_linux.h`)**:
+  - Replaced legacy `from_timer()` callback with universal kernel primitive `container_of(in_timer, _timer, timer)` in `include/osdep_service_linux.h`, resolving compilation failure on Linux 6.15+ / 6.18 where `from_timer` was deprecated.
   - Implemented `#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))` guards for station ops (`add_station`, `del_station`, `change_station`, `dump_station`), key ops (`add_key`, `del_key`, `get_key`, `set_default_mgmt_key`), and power ops (`set_txpower`, `get_txpower`, `set_wiphy_params`), ensuring full out-of-the-box compatibility on Linux LTS kernels (5.x - 6.12) as well as newer kernels (6.14+).
   - Corrected `set_monitor_channel` net_device boundary to Linux 6.7+.
-  - Corrected `from_timer` macro in `include/osdep_service_linux.h` for Linux 4.14+ timer API.
