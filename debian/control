@@ -1,0 +1,11 @@
+Package: rtl8189fs-dkms
+Version: 1.0.0
+Section: kernel
+Priority: optional
+Architecture: all
+Depends: dkms (>= 2.1.0.0), build-essential
+Maintainer: Van der Decken <elsangithub@users.noreply.github.com>
+Description: Realtek RTL8189FS SDIO Wi-Fi Linux DKMS Driver
+ Production-grade, turnkey out-of-tree DKMS driver for Realtek RTL8189FS
+ (SDIO) Wi-Fi chipsets on ARM64 Linux kernels. Optimized for FiberHome HG680-P
+ and TV Box architectures with throughput and IRQ tuning.
