@@ -20,12 +20,33 @@ A production-grade, out-of-tree Linux DKMS driver for the **Realtek RTL8189FS** 
 - **Kernel Module**: `8189fs.ko`
 - **Supported Architectures**: ARM64 / aarch64 (Armbian, Debian, Ubuntu)
 
-### How to Check the Wi-Fi Chipset:
-Execute the following in your terminal:
+### ⚠️ Device Tree (DTB) Prerequisite
+
+Unlike standard USB Wi-Fi adapters, the onboard RTL8189FS chipset is connected via the internal **SDIO bus** (`mmc@70000`). It requires the Linux kernel to properly control the hardware reset GPIO pin (`sdio-pwrseq`) and supply the 32.768 kHz reference sleep clock (`wifi32k`) during boot.
+
+To ensure the Wi-Fi hardware is powered on and recognized by the kernel, you **must use the HG680-P dedicated DTB**:
+- **Target DTB**: `meson-gxl-s905x-hg680p.dtb`
+- **Boot Configuration** (in `/boot/uEnv.txt`):
+  ```text
+  FDT=/dtb/amlogic/meson-gxl-s905x-hg680p.dtb
+  ```
+  *(or in `/boot/armbianEnv.txt`: `fdtfile=amlogic/meson-gxl-s905x-hg680p.dtb`)*
+
+> [!WARNING]
+> If you use a generic TV Box DTB (such as `meson-gxl-s905x-p212.dtb`), the Wi-Fi power sequence GPIOs will not be triggered. The chip will remain unpowered, `cat /sys/bus/sdio/devices/*/device` will return empty, and `wlan0` will never be initialized regardless of driver installation.
+
+### How to Verify DTB & Wi-Fi Chipset Detection:
+Run the following commands in your STB terminal before installing:
 ```bash
-cat /sys/bus/sdio/devices/*/device 2>/dev/null || cat /sys/bus/sdio/devices/*/vendor 2>/dev/null
+# 1. Verify that the HG680-P DTB model is active
+cat /proc/device-tree/model
+# Expected output: FiberHome HG680-P
+
+# 2. Verify that the RTL8189FS SDIO hardware is powered on and detected
+cat /sys/bus/sdio/devices/*/device 2>/dev/null
+# Expected output: 0xf179 (Hardware ID for Realtek RTL8189FS)
 ```
-If your HG680-P contains the RTL8189FS SDIO Wi-Fi module, this DKMS package (`rtl8189fs-dkms`) provides full driver automation and network stability.
+If `0xf179` is returned, your hardware and DTB are properly configured, and this DKMS package (`rtl8189fs-dkms`) provides full driver automation and network stability.
 
 ---
 

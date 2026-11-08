@@ -20,12 +20,33 @@ Driver out-of-tree Linux dengan integrasi DKMS untuk chipset Wi-Fi **Realtek RTL
 - **Modul Kernel**: `8189fs.ko`
 - **Arsitektur Didukung**: ARM64 / aarch64 (Armbian, Debian, Ubuntu)
 
-### Cara Memeriksa Chipset Wi-Fi di STB:
-Jalankan perintah berikut di terminal STB Anda:
+### ⚠️ Prasyarat DTB (Device Tree Blob)
+
+Berbeda dengan dongle USB Wi-Fi, chipset RTL8189FS pada HG680-P tersolder langsung pada motherboard dan terhubung melalui jalur **SDIO internal** (`mmc@70000`). Modul ini mewajibkan kernel Linux untuk mengontrol urutan kelistrikan GPIO reset/daya (`sdio-pwrseq`) dan sinyal clock referensi 32.768 kHz (`wifi32k`) saat proses *booting*.
+
+Agar perangkat keras Wi-Fi diberi daya dan terdeteksi oleh kernel, Anda **wajib menggunakan berkas DTB khusus HG680-P**:
+- **Berkas DTB Target**: `meson-gxl-s905x-hg680p.dtb`
+- **Konfigurasi Boot** (pada berkas `/boot/uEnv.txt`):
+  ```text
+  FDT=/dtb/amlogic/meson-gxl-s905x-hg680p.dtb
+  ```
+  *(atau pada `/boot/armbianEnv.txt`: `fdtfile=amlogic/meson-gxl-s905x-hg680p.dtb`)*
+
+> [!WARNING]
+> Jika Anda menggunakan DTB generik S905X (seperti `meson-gxl-s905x-p212.dtb`), pin GPIO power/reset Wi-Fi tidak akan dipicu saat boot. Chipset akan tetap mati tanpa daya, `cat /sys/bus/sdio/devices/*/device` akan bernilai kosong, dan interface `wlan0` tidak akan pernah muncul meskipun driver terpasang.
+
+### Cara Memeriksa DTB & Deteksi Chipset Wi-Fi di STB:
+Jalankan perintah berikut di terminal STB Anda sebelum melakukan instalasi:
 ```bash
-cat /sys/bus/sdio/devices/*/device 2>/dev/null || cat /sys/bus/sdio/devices/*/vendor 2>/dev/null
+# 1. Pastikan model DTB HG680-P aktif
+cat /proc/device-tree/model
+# Output wajib: FiberHome HG680-P
+
+# 2. Pastikan chipset RTL8189FS menerima daya dan terdeteksi di bus SDIO
+cat /sys/bus/sdio/devices/*/device 2>/dev/null
+# Output wajib: 0xf179 (Device ID resmi Realtek RTL8189FS)
 ```
-Jika HG680-P Anda menggunakan modul Wi-Fi SDIO RTL8189FS, paket DKMS ini (`rtl8189fs-dkms`) menyediakan otomatisasi instalasi driver dan kestabilan jaringan.
+Jika `0xf179` terdeteksi, konfigurasi hardware dan DTB Anda sudah benar, dan paket DKMS ini (`rtl8189fs-dkms`) akan langsung mengaktifkan antarmuka Wi-Fi secara optimal.
 
 ---
 
