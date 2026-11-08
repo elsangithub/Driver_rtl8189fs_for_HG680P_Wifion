@@ -15,40 +15,57 @@ A production-grade, out-of-tree Linux DKMS driver for the **Realtek RTL8189FS** 
 
 ## 🔍 Overview & Hardware Target
 
-- **Target Device**: FiberHome HG680-P (Amlogic S905X / ARM64)
-- **Wi-Fi Chipset**: Realtek RTL8189FS (SDIO)
+- **Fully Supported & Tested Devices**:
+  - **FiberHome HG680-P** (Amlogic S905X / ARM64)
+  - **ZTE ZXV10 B860H V2** (Amlogic S905X / ARM64)
+- **Wi-Fi Chipset**: Realtek RTL8189FS / RTL8189FTV (SDIO `0x024c:0xf179`)
+  - *Note*: `RTL8189FS` is the official Realtek SDIO product family name, while `RTL8189FTV` is the physical IC part number package soldered on the ZTE B860H V2 board. Both share identical silicon architecture and bind to the same driver.
 - **Kernel Module**: `8189fs.ko`
 - **Supported Architectures**: ARM64 / aarch64 (Armbian, Debian, Ubuntu)
 
 ### ⚠️ Device Tree (DTB) Prerequisite
 
-Unlike standard USB Wi-Fi adapters, the onboard RTL8189FS chipset is connected via the internal **SDIO bus** (`mmc@70000`). It requires the Linux kernel to properly control the hardware reset GPIO pin (`sdio-pwrseq`) and supply the 32.768 kHz reference sleep clock (`wifi32k`) during boot.
+Unlike standard USB Wi-Fi adapters, the onboard Realtek RTL8189 series chipset is connected via the internal **SDIO bus** (`mmc@70000`). It requires the Linux kernel to properly control the hardware reset GPIO line (`sdio-pwrseq`) and supply the 32.768 kHz reference sleep clock (`wifi32k`) during boot.
 
-To ensure the Wi-Fi hardware is powered on and recognized by the kernel, you **must use the HG680-P dedicated DTB**:
-- **Target DTB**: `meson-gxl-s905x-hg680p.dtb`
-- **Download DTB from Release**:
-  ```bash
-  sudo wget -O /boot/dtb/amlogic/meson-gxl-s905x-hg680p.dtb https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/meson-gxl-s905x-hg680p.dtb
-  ```
-- **Boot Configuration** (in `/boot/uEnv.txt`):
-  ```text
-  FDT=/dtb/amlogic/meson-gxl-s905x-hg680p.dtb
-  ```
-  *(or in `/boot/armbianEnv.txt`: `fdtfile=amlogic/meson-gxl-s905x-hg680p.dtb`)*
+> [!IMPORTANT]
+> **DO NOT SWAP DTB FILES BETWEEN HG680-P AND B860H!**
+> Although both TV boxes are powered by the Amlogic S905X SoC, the physical hardware reset GPIO lines on their motherboards are **routed to different pins**:
+> - **FiberHome HG680-P**: Uses reset pin **offset `0x55`** $\rightarrow$ requires `meson-gxl-s905x-hg680p.dtb`.
+> - **ZTE B860H V2**: Uses reset pin **offset `0x4c`** $\rightarrow$ requires `meson-gxl-s905x-b860h.dtb`.
+>
+> If you use the wrong DTB (e.g. using the HG680-P DTB on a B860H, or using a generic `meson-gxl-s905x-p212.dtb`), the Wi-Fi power sequence GPIOs will not trigger. The chipset will remain unpowered, `cat /sys/bus/sdio/devices/*/device` will return empty, and `wlan0` will never show up regardless of driver installation.
 
-> [!WARNING]
-> If you use a generic TV Box DTB (such as `meson-gxl-s905x-p212.dtb`), the Wi-Fi power sequence GPIOs will not be triggered. The chip will remain unpowered, `cat /sys/bus/sdio/devices/*/device` will return empty, and `wlan0` will never be initialized regardless of driver installation.
+#### DTB Configuration by Device:
+
+1. **For FiberHome HG680-P**:
+   * **Target DTB**: `meson-gxl-s905x-hg680p.dtb`
+   * **Download from Release**:
+     ```bash
+     sudo wget -O /boot/dtb/amlogic/meson-gxl-s905x-hg680p.dtb https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/meson-gxl-s905x-hg680p.dtb
+     ```
+   * **Boot Configuration** (in `/boot/uEnv.txt`):
+     ```text
+     FDT=/dtb/amlogic/meson-gxl-s905x-hg680p.dtb
+     ```
+
+2. **For ZTE ZXV10 B860H V2**:
+   * **Target DTB**: `meson-gxl-s905x-b860h.dtb` *(standard in Armbian / available in `dtb/` folder)*
+   * **Boot Configuration** (in `/boot/uEnv.txt`):
+     ```text
+     FDT=/dtb/amlogic/meson-gxl-s905x-b860h.dtb
+     ```
 
 ### How to Verify DTB & Wi-Fi Chipset Detection:
 Run the following commands in your STB terminal before installing:
 ```bash
-# 1. Verify that the HG680-P DTB model is active
+# 1. Verify that the correct model is active
 cat /proc/device-tree/model
-# Expected output: FiberHome HG680-P
+# Output on HG680-P : FiberHome HG680-P
+# Output on B860H   : ZTE B860H
 
-# 2. Verify that the RTL8189FS SDIO hardware is powered on and detected
+# 2. Verify that the RTL8189 SDIO hardware is powered on and detected
 cat /sys/bus/sdio/devices/*/device 2>/dev/null
-# Expected output: 0xf179 (Hardware ID for Realtek RTL8189FS)
+# Expected output: 0xf179 (Official Device ID for Realtek RTL8189FS / RTL8189FTV)
 ```
 If `0xf179` is returned, your hardware and DTB are properly configured, and this DKMS package (`rtl8189fs-dkms`) provides full driver automation and network stability.
 

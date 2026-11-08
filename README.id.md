@@ -15,40 +15,57 @@ Driver out-of-tree Linux dengan integrasi DKMS untuk chipset Wi-Fi **Realtek RTL
 
 ## 🔍 Ringkasan & Target Perangkat
 
-- **Perangkat Target**: FiberHome HG680-P (Amlogic S905X / ARM64)
-- **Chipset Wi-Fi**: Realtek RTL8189FS (SDIO)
+- **Perangkat yang Teruji & Didukung Penuh**:
+  - **FiberHome HG680-P** (Amlogic S905X / ARM64)
+  - **ZTE ZXV10 B860H V2** (Amlogic S905X / ARM64)
+- **Chipset Wi-Fi**: Realtek RTL8189FS / RTL8189FTV (SDIO `0x024c:0xf179`)
+  - *Catatan*: `RTL8189FS` adalah nama resmi keluarga produk SDIO dari Realtek, sedangkan `RTL8189FTV` adalah kode nomor komponen IC fisik yang disolder pada motherboard ZTE B860H V2. Keduanya berbagi arsitektur silikon yang identik dan menggunakan driver yang sama.
 - **Modul Kernel**: `8189fs.ko`
 - **Arsitektur Didukung**: ARM64 / aarch64 (Armbian, Debian, Ubuntu)
 
-### ⚠️ Prasyarat DTB (Device Tree Blob)
+### ⚠️ Prasyarat DTB (Device Tree Blob) Wajib
 
-Berbeda dengan dongle USB Wi-Fi, chipset RTL8189FS pada HG680-P tersolder langsung pada motherboard dan terhubung melalui jalur **SDIO internal** (`mmc@70000`). Modul ini mewajibkan kernel Linux untuk mengontrol urutan kelistrikan GPIO reset/daya (`sdio-pwrseq`) dan sinyal clock referensi 32.768 kHz (`wifi32k`) saat proses *booting*.
+Berbeda dengan dongle USB Wi-Fi, chipset Realtek seri RTL8189 pada HG680-P dan B860H tersolder langsung pada motherboard dan terhubung melalui jalur **SDIO internal** (`mmc@70000`). Modul ini mewajibkan kernel Linux untuk mengontrol urutan kelistrikan GPIO reset/daya (`sdio-pwrseq`) dan sinyal clock referensi 32.768 kHz (`wifi32k`) saat proses *booting*.
 
-Agar perangkat keras Wi-Fi diberi daya dan terdeteksi oleh kernel, Anda **wajib menggunakan berkas DTB khusus HG680-P**:
-- **Berkas DTB Target**: `meson-gxl-s905x-hg680p.dtb`
-- **Unduh DTB dari Aset Rilis**:
-  ```bash
-  sudo wget -O /boot/dtb/amlogic/meson-gxl-s905x-hg680p.dtb https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/meson-gxl-s905x-hg680p.dtb
-  ```
-- **Konfigurasi Boot** (pada berkas `/boot/uEnv.txt`):
-  ```text
-  FDT=/dtb/amlogic/meson-gxl-s905x-hg680p.dtb
-  ```
-  *(atau pada `/boot/armbianEnv.txt`: `fdtfile=amlogic/meson-gxl-s905x-hg680p.dtb`)*
+> [!IMPORTANT]
+> **JANGAN PERNAH MENUKAR BERKAS DTB ANTARA HG680-P DAN B860H!**
+> Meskipun kedua STB sama-sama menggunakan SoC Amlogic S905X, jalur fisik pin GPIO reset Wi-Fi pada motherboard keduanya **berbeda jalur**:
+> - **FiberHome HG680-P**: Menggunakan pin reset **offset `0x55`** $\rightarrow$ wajib pakai `meson-gxl-s905x-hg680p.dtb`.
+> - **ZTE B860H V2**: Menggunakan pin reset **offset `0x4c`** $\rightarrow$ wajib pakai `meson-gxl-s905x-b860h.dtb`.
+>
+> Jika Anda salah menggunakan DTB (misalnya memakai DTB HG680-P di B860H, atau memakai DTB generik `meson-gxl-s905x-p212.dtb`), pin reset Wi-Fi tidak akan dipicu. Chipset akan tetap mati tanpa daya, `cat /sys/bus/sdio/devices/*/device` akan bernilai kosong, dan interface `wlan0` tidak akan pernah muncul meskipun driver terpasang.
 
-> [!WARNING]
-> Jika Anda menggunakan DTB generik S905X (seperti `meson-gxl-s905x-p212.dtb`), pin GPIO power/reset Wi-Fi tidak akan dipicu saat boot. Chipset akan tetap mati tanpa daya, `cat /sys/bus/sdio/devices/*/device` akan bernilai kosong, dan interface `wlan0` tidak akan pernah muncul meskipun driver terpasang.
+#### Konfigurasi DTB Sesuai Perangkat Anda:
+
+1. **Untuk FiberHome HG680-P**:
+   * **Berkas DTB**: `meson-gxl-s905x-hg680p.dtb`
+   * **Unduh dari Aset Rilis**:
+     ```bash
+     sudo wget -O /boot/dtb/amlogic/meson-gxl-s905x-hg680p.dtb https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/meson-gxl-s905x-hg680p.dtb
+     ```
+   * **Konfigurasi Boot** (pada `/boot/uEnv.txt`):
+     ```text
+     FDT=/dtb/amlogic/meson-gxl-s905x-hg680p.dtb
+     ```
+
+2. **Untuk ZTE ZXV10 B860H V2**:
+   * **Berkas DTB**: `meson-gxl-s905x-b860h.dtb` *(bawaan Armbian / tersedia di folder `dtb/` repositori)*
+   * **Konfigurasi Boot** (pada `/boot/uEnv.txt`):
+     ```text
+     FDT=/dtb/amlogic/meson-gxl-s905x-b860h.dtb
+     ```
 
 ### Cara Memeriksa DTB & Deteksi Chipset Wi-Fi di STB:
 Jalankan perintah berikut di terminal STB Anda sebelum melakukan instalasi:
 ```bash
-# 1. Pastikan model DTB HG680-P aktif
+# 1. Pastikan model DTB sesuai dengan perangkat Anda
 cat /proc/device-tree/model
-# Output wajib: FiberHome HG680-P
+# Output pada HG680-P : FiberHome HG680-P
+# Output pada B860H   : ZTE B860H
 
-# 2. Pastikan chipset RTL8189FS menerima daya dan terdeteksi di bus SDIO
+# 2. Pastikan chipset RTL8189 menerima daya dan terdeteksi di bus SDIO
 cat /sys/bus/sdio/devices/*/device 2>/dev/null
-# Output wajib: 0xf179 (Device ID resmi Realtek RTL8189FS)
+# Output wajib: 0xf179 (Device ID resmi Realtek RTL8189FS / RTL8189FTV)
 ```
 Jika `0xf179` terdeteksi, konfigurasi hardware dan DTB Anda sudah benar, dan paket DKMS ini (`rtl8189fs-dkms`) akan langsung mengaktifkan antarmuka Wi-Fi secara optimal.
 
