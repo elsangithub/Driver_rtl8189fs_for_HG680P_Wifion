@@ -19,6 +19,14 @@ Hardened driver bottom-half tasklet execution to strictly adhere to the 64-bit L
 - **Next-Gen Linux Kernel Compatibility (Linux 6.17+)**:
   - Implemented `#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))` compatibility guards in `os_dep/linux/ioctl_cfg80211.c` for `cfg80211_rtw_set_wiphy_params`, `cfg80211_rtw_set_txpower`, and `cfg80211_rtw_get_txpower` to properly accommodate the new `int ifindex` parameter introduced for interface-specific wiphy configuration.
 
+### Added
+- **Dedicated HG680-P Device Tree Binary in Release Assets**:
+  - Published pre-compiled `meson-gxl-s905x-hg680p.dtb` as a standalone GitHub Release asset with properly configured SDIO power sequence GPIOs (`sdio-pwrseq`) and 32.768 kHz sleep clock (`wifi32k`), enabling turnkey hardware activation on HG680-P TV boxes.
+
+### Changed
+- **CI/CD Workflow Modernization**:
+  - Upgraded release workflow action to `actions/checkout@v6` to run natively on Node.js 24 and eliminate runner deprecation warnings.
+
 ---
 
 ## [1.0.2] - 2026-11-08

@@ -40,6 +40,7 @@ jobs:
           fi
           gh release create "${GITHUB_REF_NAME}" \
             rtl8189fs-dkms_*_all.deb \
+            dtb/meson-gxl-s905x-hg680p.dtb \
             --title "${TITLE_PREFIX}${GITHUB_REF_NAME}" \
             --notes-file release_notes.md \
             ${PRERELEASE_FLAG}

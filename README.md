@@ -26,6 +26,10 @@ Unlike standard USB Wi-Fi adapters, the onboard RTL8189FS chipset is connected v
 
 To ensure the Wi-Fi hardware is powered on and recognized by the kernel, you **must use the HG680-P dedicated DTB**:
 - **Target DTB**: `meson-gxl-s905x-hg680p.dtb`
+- **Download DTB from Release**:
+  ```bash
+  sudo wget -O /boot/dtb/amlogic/meson-gxl-s905x-hg680p.dtb https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/meson-gxl-s905x-hg680p.dtb
+  ```
 - **Boot Configuration** (in `/boot/uEnv.txt`):
   ```text
   FDT=/dtb/amlogic/meson-gxl-s905x-hg680p.dtb
