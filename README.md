@@ -4,7 +4,7 @@
 
 # Realtek RTL8189FS SDIO Wi-Fi Driver for FiberHome HG680-P (Armbian)
 
-[![Release](https://img.shields.io/badge/release-v1.0.2-blue.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.3-blue.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases)
 [![Build & Release](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/actions)
 [![DKMS Ready](https://img.shields.io/badge/DKMS-Automated_Build-brightgreen.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion)
 [![License: GPL-2.0](https://img.shields.io/badge/License-GPL_v2-blue.svg)](LICENSE)
@@ -72,10 +72,10 @@ sudo apt update
 sudo apt install -y dkms build-essential linux-headers-$(uname -r)
 
 # 2. Download the package
-wget https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.2/rtl8189fs-dkms_1.0.2_all.deb
+wget https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/rtl8189fs-dkms_1.0.3_all.deb
 
 # 3. Install the package
-sudo dpkg -i rtl8189fs-dkms_1.0.2_all.deb
+sudo dpkg -i rtl8189fs-dkms_1.0.3_all.deb
 ```
 
 ### Option 2: Build Debian Package Locally
@@ -92,7 +92,7 @@ chmod +x build-deb.sh
 ./build-deb.sh
 
 # Install the generated .deb package
-sudo dpkg -i rtl8189fs-dkms_1.0.2_all.deb
+sudo dpkg -i rtl8189fs-dkms_1.0.3_all.deb
 ```
 
 ---

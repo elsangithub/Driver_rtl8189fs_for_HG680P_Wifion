@@ -1,5 +1,5 @@
 Package: rtl8189fs-dkms
-Version: 1.0.2
+Version: 1.0.3
 Section: kernel
 Priority: optional
 Architecture: all

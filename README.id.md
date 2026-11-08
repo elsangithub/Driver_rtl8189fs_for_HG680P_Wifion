@@ -4,7 +4,7 @@
 
 # Driver Wi-Fi Realtek RTL8189FS SDIO untuk FiberHome HG680-P (Armbian)
 
-[![Release](https://img.shields.io/badge/release-v1.0.2-blue.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.3-blue.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases)
 [![Build & Release](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/actions)
 [![DKMS Ready](https://img.shields.io/badge/DKMS-Automated_Build-brightgreen.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion)
 [![License: GPL-2.0](https://img.shields.io/badge/License-GPL_v2-blue.svg)](LICENSE)
@@ -72,10 +72,10 @@ sudo apt update
 sudo apt install -y dkms build-essential linux-headers-$(uname -r)
 
 # 2. Unduh paket rilis
-wget https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.2/rtl8189fs-dkms_1.0.2_all.deb
+wget https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/rtl8189fs-dkms_1.0.3_all.deb
 
 # 3. Pasang paket ke sistem
-sudo dpkg -i rtl8189fs-dkms_1.0.2_all.deb
+sudo dpkg -i rtl8189fs-dkms_1.0.3_all.deb
 ```
 
 ### Opsi 2: Kompilasi dan Buat Paket Debian Lokal
@@ -92,7 +92,7 @@ chmod +x build-deb.sh
 ./build-deb.sh
 
 # Pasang paket hasil kompilasi
-sudo dpkg -i rtl8189fs-dkms_1.0.2_all.deb
+sudo dpkg -i rtl8189fs-dkms_1.0.3_all.deb
 ```
 
 ---

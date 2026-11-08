@@ -187,7 +187,7 @@ exit:
 	return ret;
 }
 
-static void rtl8188fs_recv_tasklet(void *priv)
+static void rtl8188fs_recv_tasklet(unsigned long priv)
 {
 	_adapter *adapter = (_adapter *)priv;
 	s32 ret;
@@ -449,7 +449,7 @@ s32 rtl8188fs_init_recv_priv(PADAPTER padapter)
 
 	/* 3 2. init tasklet */
 	tasklet_init(&precvpriv->recv_tasklet,
-		     (void *)rtl8188fs_recv_tasklet,
+		     rtl8188fs_recv_tasklet,
 		     (unsigned long)padapter);
 	goto exit;
 

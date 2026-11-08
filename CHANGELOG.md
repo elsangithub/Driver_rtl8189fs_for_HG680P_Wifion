@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2026-11-08
+
+### 🛡️ Tasklet ARM64 ABI Alignment & Next-Gen Linux 6.17+ Compatibility
+Hardened driver bottom-half tasklet execution to strictly adhere to the 64-bit Linux kernel tasklet ABI on ARM64 Cortex-A53, eliminating `-Wcast-function-type` warnings and protecting against Control Flow Integrity (KCFI) traps. Expanded forward-looking compatibility guards for Linux 6.17+ wireless parameters (`ifindex`).
+
+### Fixed
+- **Tasklet Function Prototype Alignment (ARM64 ABI)**:
+  - Aligned `rtl8188fs_recv_tasklet` prototype in `hal/rtl8188f/sdio/rtl8189fs_recv.c` from `void *priv` to standard scalar `unsigned long priv`, eliminating unsafe `(void *)` cast in `tasklet_init` and ensuring 100% compliance with Linux kernel tasklet ABI on 64-bit architectures.
+  - Aligned `mpath_tx_tasklet_hdl` prototype in `core/mesh/rtw_mesh.c` from `void *priv` to `unsigned long priv` and removed unsafe cast in `tasklet_init`.
+- **Next-Gen Linux Kernel Compatibility (Linux 6.17+)**:
+  - Implemented `#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0))` compatibility guards in `os_dep/linux/ioctl_cfg80211.c` for `cfg80211_rtw_set_wiphy_params`, `cfg80211_rtw_set_txpower`, and `cfg80211_rtw_get_txpower` to properly accommodate the new `int ifindex` parameter introduced for interface-specific wiphy configuration.
+
+---
+
 ## [1.0.2] - 2026-11-08
 
 ### 🚀 Throughput Acceleration, SGI 400ns, Thermal Control & Stability
