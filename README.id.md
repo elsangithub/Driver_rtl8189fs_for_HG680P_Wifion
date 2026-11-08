@@ -71,14 +71,17 @@ Jika `0xf179` terdeteksi, konfigurasi hardware dan DTB Anda sudah benar, dan pak
 Unduh dan pasang paket rilis terbaru dari GitHub Releases:
 
 ```bash
-# 1. Pastikan kernel headers dan dkms terpasang
+# 1. Pasang paket dependensi (DKMS, peralatan build & wget)
 sudo apt update
-sudo apt install -y dkms build-essential linux-headers-$(uname -r)
+sudo apt install -y dkms build-essential wget
 
-# 2. Unduh paket rilis
+# 2. Verifikasi ketersediaan kernel headers
+ls -d /usr/src/linux-headers-$(uname -r)
+
+# 3. Unduh paket rilis
 wget https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/rtl8189fs-dkms_1.0.3_all.deb
 
-# 3. Pasang paket ke sistem
+# 4. Pasang paket ke sistem
 sudo dpkg -i rtl8189fs-dkms_1.0.3_all.deb
 ```
 

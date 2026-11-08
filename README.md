@@ -71,14 +71,17 @@ If `0xf179` is returned, your hardware and DTB are properly configured, and this
 Download and install the latest pre-built Debian package from GitHub Releases:
 
 ```bash
-# 1. Ensure kernel headers and dkms are installed
+# 1. Install prerequisites (DKMS, build tools & wget)
 sudo apt update
-sudo apt install -y dkms build-essential linux-headers-$(uname -r)
+sudo apt install -y dkms build-essential wget
 
-# 2. Download the package
+# 2. Verify kernel headers are present
+ls -d /usr/src/linux-headers-$(uname -r)
+
+# 3. Download the package
 wget https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.3/rtl8189fs-dkms_1.0.3_all.deb
 
-# 3. Install the package
+# 4. Install the package
 sudo dpkg -i rtl8189fs-dkms_1.0.3_all.deb
 ```
 
