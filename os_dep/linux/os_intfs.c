@@ -245,7 +245,7 @@ int rtw_rx_ampdu_amsdu = 2;/* 0: disabled, 1:enabled, 2:auto . There is an IOT i
 #elif ((defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)) && defined(CONFIG_SDIO_HCI))
 int rtw_rx_ampdu_amsdu = 1;
 #else
-int rtw_rx_ampdu_amsdu = 1;/* 0: disabled, 1:enabled, 2:auto */
+int rtw_rx_ampdu_amsdu = 0;/* 0: disabled, 1:enabled, 2:auto */
 #endif
 /*
 * 2: Follow the AMSDU filed in ADDBA Resp. (Deault)
@@ -253,7 +253,7 @@ int rtw_rx_ampdu_amsdu = 1;/* 0: disabled, 1:enabled, 2:auto */
 * 1: Force the AMSDU filed in ADDBA Resp. to be enabled.
 */
 int rtw_tx_ampdu_amsdu = 2;
-int rtw_rx_ampdu_factor = 3; /* 0: 8k, 1: 16k, 2: 32k, 3: 64k, 0xff: default */
+int rtw_rx_ampdu_factor = 1; /* 0: 8k, 1: 16k, 2: 32k, 3: 64k, 0xff: default */
 module_param(rtw_rx_ampdu_factor, int, 0644);
 MODULE_PARM_DESC(rtw_rx_ampdu_factor, "RX AMPDU factor: 0: 8k, 1: 16k, 2: 32k, 3: 64k, 0xff: default");
 
