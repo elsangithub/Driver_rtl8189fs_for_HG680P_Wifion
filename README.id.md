@@ -51,10 +51,10 @@ sudo apt update
 sudo apt install -y dkms build-essential linux-headers-$(uname -r)
 
 # 2. Unduh paket rilis
-wget https://github.com/elsangithub/hg680p-wifi-rtl8189fs/releases/download/v1.0.1/rtl8189fs-dkms_1.0.1_all.deb
+wget https://github.com/elsangithub/hg680p-wifi-rtl8189fs/releases/download/v1.0.2/rtl8189fs-dkms_1.0.2_all.deb
 
 # 3. Pasang paket ke sistem
-sudo dpkg -i rtl8189fs-dkms_1.0.1_all.deb
+sudo dpkg -i rtl8189fs-dkms_1.0.2_all.deb
 ```
 
 ### Opsi 2: Kompilasi dan Buat Paket Debian Lokal
@@ -71,7 +71,7 @@ chmod +x build-deb.sh
 ./build-deb.sh
 
 # Pasang paket hasil kompilasi
-sudo dpkg -i rtl8189fs-dkms_1.0.1_all.deb
+sudo dpkg -i rtl8189fs-dkms_1.0.2_all.deb
 ```
 
 ---

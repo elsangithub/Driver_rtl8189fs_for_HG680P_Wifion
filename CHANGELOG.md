@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2026-11-08
+
+### 🚀 Throughput Acceleration, SGI 400ns & Anti-Bufferbloat
+Pushed real-world throughput limits on FiberHome HG680-P by enabling Short Guard Interval (SGI 400ns) to raise the physical link rate to 72.2 Mbps, unlocking maximum A-MPDU (64K) and A-MSDU frame aggregation, eliminating Wi-Fi bufferbloat via FQ-CoDel and TCP BBR, and hardening kernel module teardown.
+
+### Added
+- **Short Guard Interval (SGI 400ns)**:
+  - Enabled SGI capability injection (`IEEE80211_HT_CAP_SGI_20` and `IEEE80211_HT_CAP_SGI_40`) into `WIFI_ASSOCREQ` in `core/rtw_mlme_ext.c`, allowing the AP to transmit using 400ns symbols (72.2 Mbps PHY).
+  - Unlocked SGI rate control adaptation in `OnAssocRsp()` to permit uplink transmission at 72.2 Mbps under Rate Adaptive (RA) engine.
+  - Exposed runtime module parameter `rtw_short_gi` in `os_dep/linux/os_intfs.c`.
+- **Maximum Frame Aggregation (A-MPDU 64K & A-MSDU)**:
+  - Configured `rtw_rx_ampdu_amsdu = 1` by default to accept A-MSDU subframes inside A-MPDU bursts during ADDBA negotiation.
+  - Added `rtw_rx_ampdu_factor` module parameter (default `3` = 64KB) in `os_dep/linux/os_intfs.c` and advertised 64K capability in Association Request.
+  - Updated `/etc/modprobe.d/rtl8189fs.conf` with optimized aggregation options (`rtw_rx_ampdu_amsdu=1 rtw_tx_ampdu_amsdu=1 rtw_ampdu_enable=1 rtw_short_gi=15 rtw_rx_ampdu_factor=3`).
+- **Bufferbloat Elimination & Latency Control**:
+  - Configured `net.core.default_qdisc = fq_codel` and `net.ipv4.tcp_congestion_control = bbr` in `/etc/sysctl.d/99-rtl8189fs-throughput.conf`.
+  - Applied active Fair Queueing (`fq_codel`) and `txqueuelen 1000` on `wlan0` via `/usr/lib/udev/rtl8189fs-irq-tune.sh`.
+
+### Fixed
+- **Kernel cfg80211 Warning Elimination (`net/wireless/scan.c:84`)**:
+  - Bypassed manual `rtw_cfg80211_unlink_bss()` invocation on Linux kernel >= 6.0 in `os_dep/linux/ioctl_cfg80211.c`, preventing `WARN_ON(atomic_read(&bss->hold))` during module teardown and disconnection.
+
 ## [1.0.1] - 2026-11-08
 
 ### ⚡ Architecture & Compile-Time Optimization
