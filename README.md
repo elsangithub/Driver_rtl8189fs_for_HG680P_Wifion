@@ -4,7 +4,7 @@
 
 # Realtek RTL8189FS SDIO Wi-Fi Driver for FiberHome HG680-P (Armbian)
 
-[![Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.2-blue.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs/releases)
 [![Build & Release](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs/actions)
 [![DKMS Ready](https://img.shields.io/badge/DKMS-Automated_Build-brightgreen.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs)
 [![License: GPL-2.0](https://img.shields.io/badge/License-GPL_v2-blue.svg)](LICENSE)

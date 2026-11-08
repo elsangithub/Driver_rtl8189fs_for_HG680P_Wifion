@@ -51,7 +51,8 @@ for readme in README.md README.id.md; do
         sed -i -E "s/rtl8189fs-dkms_[0-9]+\.[0-9]+\.[0-9]+(_[a-zA-Z0-9.-]+)?_all\.deb/rtl8189fs-dkms_${NEW_VER}_all.deb/g" "$readme"
         sed -i -E "s/releases\/download\/v[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]*)/releases\/download\/v${NEW_VER}/g" "$readme"
         sed -i -E "s/releases\/tag\/v[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]*)/releases\/tag\/v${NEW_VER}/g" "$readme"
-        sed -i -E "s/badge\/version-[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]*)/badge\/version-${NEW_VER}/g" "$readme"
+        sed -i -E "s/badge\/version-[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]*)/badge\/version-${NEW_VER}-blue.svg/g" "$readme"
+        sed -i -E "s/badge\/release-v[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]*)/badge\/release-v${NEW_VER}-blue.svg/g" "$readme"
         echo "[OK] Updated $readme"
     fi
 done
