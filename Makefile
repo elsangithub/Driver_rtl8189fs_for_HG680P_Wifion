@@ -76,10 +76,10 @@ CONFIG_USB_AUTOSUSPEND = n
 CONFIG_HW_PWRP_DETECTION = n
 CONFIG_BT_COEXIST = n
 CONFIG_WAPI_SUPPORT = n
-CONFIG_EFUSE_CONFIG_FILE = y
+CONFIG_EFUSE_CONFIG_FILE = n
 CONFIG_EXT_CLK = n
 CONFIG_TRAFFIC_PROTECT = n
-CONFIG_LOAD_PHY_PARA_FROM_FILE = y
+CONFIG_LOAD_PHY_PARA_FROM_FILE = n
 CONFIG_TXPWR_BY_RATE = y
 CONFIG_TXPWR_BY_RATE_EN = y
 CONFIG_TXPWR_LIMIT = y
@@ -90,7 +90,7 @@ CONFIG_RTW_ADAPTIVITY_MODE = normal
 CONFIG_SIGNAL_SCALE_MAPPING = n
 CONFIG_80211W = n
 CONFIG_REDUCE_TX_CPU_LOADING = n
-CONFIG_BR_EXT = y
+CONFIG_BR_EXT = n
 CONFIG_TDLS = n
 CONFIG_WIFI_MONITOR = n
 CONFIG_MCC_MODE = n
@@ -2291,13 +2291,16 @@ rtk_core :=	core/rtw_cmd.o \
 		core/rtw_sta_mgt.o \
 		core/rtw_ap.o \
 		core/rtw_xmit.o	\
-		core/rtw_br_ext.o \
 		core/rtw_sreset.o \
 		core/rtw_btcoex_wifionly.o \
 		core/rtw_btcoex.o \
 		core/rtw_odm.o \
 		core/rtw_rm.o \
 		core/efuse/rtw_efuse.o 
+
+ifeq ($(CONFIG_BR_EXT), y)
+rtk_core += core/rtw_br_ext.o
+endif
 
 ifeq ($(CONFIG_P2P), y)
 rtk_core += core/rtw_p2p.o
