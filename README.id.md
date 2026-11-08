@@ -4,9 +4,9 @@
 
 # Driver Wi-Fi Realtek RTL8189FS SDIO untuk FiberHome HG680-P (Armbian)
 
-[![Release](https://img.shields.io/badge/release-v1.0.2-blue.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs/releases)
-[![Build & Release](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs/actions)
-[![DKMS Ready](https://img.shields.io/badge/DKMS-Automated_Build-brightgreen.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs)
+[![Release](https://img.shields.io/badge/release-v1.0.2-blue.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases)
+[![Build & Release](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/actions)
+[![DKMS Ready](https://img.shields.io/badge/DKMS-Automated_Build-brightgreen.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion)
 [![License: GPL-2.0](https://img.shields.io/badge/License-GPL_v2-blue.svg)](LICENSE)
 
 Driver out-of-tree Linux dengan integrasi DKMS untuk chipset Wi-Fi **Realtek RTL8189FS** (SDIO 802.11b/g/n), dirancang dan dioptimalkan secara khusus untuk STB **FiberHome HG680-P** (Amlogic S905X / Meson-GXL) yang menjalankan Linux/Armbian.
@@ -51,7 +51,7 @@ sudo apt update
 sudo apt install -y dkms build-essential linux-headers-$(uname -r)
 
 # 2. Unduh paket rilis
-wget https://github.com/elsangithub/hg680p-wifi-rtl8189fs/releases/download/v1.0.2/rtl8189fs-dkms_1.0.2_all.deb
+wget https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.2/rtl8189fs-dkms_1.0.2_all.deb
 
 # 3. Pasang paket ke sistem
 sudo dpkg -i rtl8189fs-dkms_1.0.2_all.deb
@@ -63,8 +63,8 @@ Untuk membangun paket biner `.deb` langsung dari kode sumber:
 
 ```bash
 # Clone repositori
-git clone https://github.com/elsangithub/hg680p-wifi-rtl8189fs.git
-cd hg680p-wifi-rtl8189fs
+git clone https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion.git
+cd Driver_rtl8189fs_for_HG680P_Wifion
 
 # Buat paket .deb
 chmod +x build-deb.sh

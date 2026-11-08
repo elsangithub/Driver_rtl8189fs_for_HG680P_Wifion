@@ -4,9 +4,9 @@
 
 # Realtek RTL8189FS SDIO Wi-Fi Driver for FiberHome HG680-P (Armbian)
 
-[![Release](https://img.shields.io/badge/release-v1.0.2-blue.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs/releases)
-[![Build & Release](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs/actions)
-[![DKMS Ready](https://img.shields.io/badge/DKMS-Automated_Build-brightgreen.svg)](https://github.com/elsangithub/hg680p-wifi-rtl8189fs)
+[![Release](https://img.shields.io/badge/release-v1.0.2-blue.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases)
+[![Build & Release](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/actions)
+[![DKMS Ready](https://img.shields.io/badge/DKMS-Automated_Build-brightgreen.svg)](https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion)
 [![License: GPL-2.0](https://img.shields.io/badge/License-GPL_v2-blue.svg)](LICENSE)
 
 A production-grade, out-of-tree Linux DKMS driver for the **Realtek RTL8189FS** (SDIO 802.11b/g/n) Wi-Fi chipset, specifically engineered and tuned for the **FiberHome HG680-P** (Amlogic S905X / Meson-GXL) TV box running Linux/Armbian.
@@ -51,7 +51,7 @@ sudo apt update
 sudo apt install -y dkms build-essential linux-headers-$(uname -r)
 
 # 2. Download the package
-wget https://github.com/elsangithub/hg680p-wifi-rtl8189fs/releases/download/v1.0.2/rtl8189fs-dkms_1.0.2_all.deb
+wget https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion/releases/download/v1.0.2/rtl8189fs-dkms_1.0.2_all.deb
 
 # 3. Install the package
 sudo dpkg -i rtl8189fs-dkms_1.0.2_all.deb
@@ -63,8 +63,8 @@ To build the package directly from source:
 
 ```bash
 # Clone the repository
-git clone https://github.com/elsangithub/hg680p-wifi-rtl8189fs.git
-cd hg680p-wifi-rtl8189fs
+git clone https://github.com/elsangithub/Driver_rtl8189fs_for_HG680P_Wifion.git
+cd Driver_rtl8189fs_for_HG680P_Wifion
 
 # Build the .deb package
 chmod +x build-deb.sh
