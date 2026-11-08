@@ -2584,6 +2584,11 @@ u32 rtw_cfg80211_wait_scan_req_empty(_adapter *adapter, u32 timeout_ms)
 
 void rtw_cfg80211_unlink_bss(_adapter *padapter, struct wlan_network *pnetwork)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+	/* On Linux 6.0+, cfg80211 SME manages BSS hold/unhold and expiration automatically.
+	 * Manually unlinking BSS while SME hold reference is active triggers WARN_ON in bss_free(). */
+	return;
+#else
 	struct wireless_dev *pwdev = padapter->rtw_wdev;
 	struct wiphy *wiphy = pwdev->wiphy;
 	struct cfg80211_bss *bss = NULL;
@@ -2610,6 +2615,7 @@ void rtw_cfg80211_unlink_bss(_adapter *padapter, struct wlan_network *pnetwork)
 #endif
 	}
 	return;
+#endif
 }
 
 /* if target wps scan ongoing, target_ssid is filled */
